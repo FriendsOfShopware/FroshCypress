@@ -1,0 +1,10 @@
+{
+  "name": "Product name",
+  "taxId": 1,
+  "supplier": {
+    "name": "shopware AG"
+  },
+  "mainDetail": {
+    "number": "SW00003"
+  }
+}

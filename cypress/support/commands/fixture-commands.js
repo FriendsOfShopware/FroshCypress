@@ -30,11 +30,10 @@ Cypress.Commands.add("removeFixtureByName", (name, endpoint, options = {}) => {
     return cy.searchViaAdminApi({
         endpoint: endpoint,
         data: {
-            field: options.identifier ? options.identifier : 'name',
             value: name
         }
     }).then((result) => {
-        return cy.deleteViaAdminApi(endpoint, result.id)
+        return cy.deleteViaAdminApi(endpoint, result)
     })
 });
 
@@ -47,41 +46,7 @@ Cypress.Commands.add("removeFixtureByName", (name, endpoint, options = {}) => {
  * @param {Object} [options={}] - Options concerning creation
  */
 Cypress.Commands.add("createProductFixture", (endpoint, options = {}) => {
-    let json = {};
-    let manufacturerId = '';
-    let categoryId = '';
-
-    return cy.fixture(endpoint).then((result) => {
-        json = result;
-
-        return cy.createDefaultFixture('category')
-    }).then((result) => {
-        categoryId = result;
-
-        return cy.searchViaAdminApi({
-            endpoint: 'product-manufacturer',
-            data: {
-                field: 'name',
-                value: options.manufacturerName
-            }
-        })
-    }).then((result) => {
-        manufacturerId = result.id;
-
-        return cy.searchViaAdminApi({
-            endpoint: 'tax',
-            data: {
-                field: 'name',
-                value: options.taxName
-            }
-        })
-    }).then((result) => {
-        return Object.assign({}, {
-            taxId: result.id,
-            manufacturerId: manufacturerId,
-            categoryId: categoryId
-        }, json);
-    }).then((result) => {
+return cy.fixture(endpoint).then((result) => {
         return cy.createViaAdminApi({
             endpoint: endpoint,
             data: result
