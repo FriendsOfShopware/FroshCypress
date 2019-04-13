@@ -26,6 +26,4 @@ import './commands/storefront-api-commands'
 import './commands/fixture-commands'
 
 // Alternatively you can use CommonJS syntax:
-require('./pages/sw-general.page-object');
-require('./pages/module/sw-product.page-object');
-require('./pages/module/sw-manufacturer.page-object');
+require('cypress-xpath');

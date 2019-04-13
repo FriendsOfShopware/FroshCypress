@@ -23,6 +23,7 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+const utils = require('./../../support/helper/utils');
 
 /**
  * Login
@@ -48,4 +49,33 @@ Cypress.Commands.add("login", (userType) => {
     cy.get('.x-btn-center').click();
 
     cy.get('.x-main-logo-container').should('be.visible');
+});
+
+/**
+ * Click context menu in order to cause a desired action
+ * @memberOf Cypress.Chainable#
+ * @name clickMenuItem
+ * @function
+ * @param {String} mainMenuId - Id of the Main Menu item
+ * @param {String} subMenuId - Id of the sub menu item
+ */
+Cypress.Commands.add('clickMenuItem', (mainMenuItem, subMenuItem = null) => {
+    const mainMenuItemPath = utils.xp.reset().child('span', [{
+        target: '@text',
+        condition: mainMenuItem
+    }], 1).getXpath();
+
+    cy.get('.shopware-menu').should('be.visible');
+    cy.wait(2000); // Chai seems to be broken in connection with xpath
+    cy.xpath(mainMenuItemPath).click();
+
+    // We're dealing with a sub menu entry, so we have to find this and click it
+    if (subMenuItem) {
+        const subMenuItemLinkPath = utils.xp.reset().child('span', [{
+            target: '~text',
+            condition: subMenuItem
+        }]).getXpath();
+
+        cy.xpath(subMenuItemLinkPath).click();
+    }
 });
