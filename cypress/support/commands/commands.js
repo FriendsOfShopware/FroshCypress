@@ -24,6 +24,16 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+const backendCookieName = 'SHOPWAREBACKEND';
+let userTypes = {
+    demo: {
+        name: 'demo',
+        pass: 'demo',
+        token: null
+    }
+};
+
+
 /**
  * Login
  * @memberOf Cypress.Chainable#
@@ -31,14 +41,14 @@
  * @function
  * @param {Object} userType - The type of the user logging in
  */
-Cypress.Commands.add("login", (userType) => {
-    const types = {
-        demo: {
-            name: 'demo',
-            pass: 'demo'
-        }
-    };
-    const user = types[userType];
+Cypress.Commands.add('login', (userType) => {
+    const user = userTypes[userType];
+
+    if (user.token) {
+        cy.setCookie(backendCookieName, user.token);
+        cy.visit('/backend');
+        return;
+    }
 
     cy.visit('/backend');
     cy.get('.x-container h1').contains('Shopware Backend Login');
@@ -48,4 +58,14 @@ Cypress.Commands.add("login", (userType) => {
     cy.get('.x-btn-center').click();
 
     cy.get('.x-main-logo-container').should('be.visible');
+
+    userTypes[userType].token = cy.getCookie(backendCookieName);
+});
+
+Cypress.Commands.add("hoverModule", (name) => {
+    cy.get('.shopware-menu button span').contains(name).trigger('mouseover');
+});
+
+Cypress.Commands.add("openModule", (name, subName) => {
+    cy.get('.shopware-menu button span').contains(name).get('.x-menu-item').contains(subName).click();
 });

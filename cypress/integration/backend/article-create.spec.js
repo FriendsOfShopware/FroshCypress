@@ -5,7 +5,8 @@ describe('Product: Create with image', function () {
     });
 
     it('creates a product with an image', function () {
-
+        cy.hoverModule('Artikel');
+        cy.openModule('Artikel', 'Anlegen');
     });
 
     afterEach(function () {
