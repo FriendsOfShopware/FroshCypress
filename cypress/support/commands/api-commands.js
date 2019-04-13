@@ -137,9 +137,9 @@ Cypress.Commands.add("createViaAdminApi", (data) => {
  */
 Cypress.Commands.add("searchViaAdminApi", (data) => {
     const filters = {
-        filter: [{
+        filter: {
             name: data.value
-        }],
+        },
         limit: 1
     };
 

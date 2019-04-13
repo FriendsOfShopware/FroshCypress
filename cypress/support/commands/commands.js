@@ -26,6 +26,19 @@
 const utils = require('./../../support/helper/utils');
 
 /**
+ * Types in an input element and checks if the content was correctly typed
+ * @memberOf Cypress.Chainable#
+ * @name typeAndCheck
+ * @function
+ * @param {String} value - The value to type
+ */
+Cypress.Commands.add('typeAndCheck', {
+    prevSubject: 'element'
+}, (subject, value) => {
+    cy.wrap(subject).type(value).invoke('val').should('eq', value)
+});
+
+/**
  * Login
  * @memberOf Cypress.Chainable#
  * @name login
