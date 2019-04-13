@@ -25,5 +25,8 @@ import './commands/storefront-api-commands'
 // Import fixture commands.js using ES2015 syntax:
 import './commands/fixture-commands'
 
+// Import fixture commands.js using ES2015 syntax:
+import './commands/xpath-commands'
+
 // Alternatively you can use CommonJS syntax:
 require('cypress-xpath');
