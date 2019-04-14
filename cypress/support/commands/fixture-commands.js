@@ -29,9 +29,7 @@ Cypress.Commands.add("createDefaultFixture", (endpoint) => {
 Cypress.Commands.add("removeFixtureByName", (name, endpoint, options = {}) => {
     return cy.apiSearchByName({
         endpoint: endpoint,
-        data: {
-            value: name
-        }
+        value: name
     }).then((result) => {
         return cy.apiDelete(endpoint, result)
     })
@@ -63,9 +61,9 @@ return cy.fixture(endpoint).then((result) => {
  */
 Cypress.Commands.add("getCustomerByEmail", (email) => {
     const filters = {
-        filter: [{
+        filter: {
             email: email
-        }],
+        },
         limit: 1
     };
 

@@ -8,7 +8,7 @@ Cypress.Commands.add("apiRequest", (method, url, requestData = {}) => {
     const requestConfig = {
         auth: {
             username: 'demo',
-            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB'
+            password: '8mnq6vav02p3buc8h2q4q6n137'
         },
         method: method,
         url: url,
@@ -38,7 +38,7 @@ Cypress.Commands.add("apiSearchRequest", (method, url, requestData = {}) => {
     const requestConfig = {
         auth: {
             username: 'demo',
-            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB'
+            password: '8mnq6vav02p3buc8h2q4q6n137'
         },
         method: method,
         url: url,
@@ -81,6 +81,7 @@ Cypress.Commands.add("apiCreate", (data) => {
  * @param {Object} data - Necessary data for the API request
  */
 Cypress.Commands.add("apiSearchByName", (data) => {
+    console.log('data.value :', data.value);
     const filters = {
         filter: {
             name: data.value
