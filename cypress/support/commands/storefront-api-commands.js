@@ -19,7 +19,7 @@ Cypress.Commands.add('getSalesChannelId', () => {
             endpoint: 'sales-channel'
         };
 
-        return cy.searchViaAdminApi(parameters).then((data) => {
+        return cy.apiSearchByName(parameters).then((data) => {
             return data.attributes.accessKey;
         });
     });
@@ -62,7 +62,7 @@ Cypress.Commands.add('storefrontApiRequest', (method, endpoint, header = {}, bod
  * @function
  */
 Cypress.Commands.add('getRandomProductInformationForCheckout', () => {
-    return cy.requestAdminApi(
+    return cy.apiRequest(
         'GET',
         '/api/articles'
     ).then((result) => {

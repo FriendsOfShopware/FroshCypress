@@ -1,75 +1,14 @@
 /**
- * Authenticate towards the Shopware API
- * @memberOf Cypress.Chainable#
- * @name authenticate
- * @function
- */
-Cypress.Commands.add("authenticate", () => {
-    return cy.request(
-        'POST',
-        '/api',
-        {
-            grant_type: Cypress.env('grant') ? Cypress.env('grant') : 'password',
-            client_id: Cypress.env('client_id') ? Cypress.env('client_id') : 'administration',
-            scopes: Cypress.env('scope') ? Cypress.env('scope') : 'write',
-            username: Cypress.env('username') ? Cypress.env('username') : 'admin',
-            password: Cypress.env('password') ? Cypress.env('password') : 'shopware'
-        }).then((responseData) => {
-        return {
-            access: responseData.body.access_token,
-            refresh: responseData.body.refresh_token,
-            expiry: Math.round(+new Date() / 1000) + responseData.body.expires_in
-        };
-    });
-});
-
-/**
- * Switches administration UI locale to EN_GB
- * @memberOf Cypress.Chainable#
- * @name setLocaleToEnGb
- * @function
- */
-Cypress.Commands.add("setLocaleToEnGb", () => {
-    cy.authenticate().then(() => {
-        return cy.window().then((win) => {
-            win.localStorage.setItem('sw-admin-locale', 'en-GB');
-        })
-    })
-});
-
-/**
- * Logs in silently using Shopware API
- * @memberOf Cypress.Chainable#
- * @name loginViaApi
- * @function
- */
-Cypress.Commands.add("loginViaApi", () => {
-    return cy.authenticate().then((result) => {
-        return cy.window().then((win) => {
-            win.localStorage.setItem('bearerAuth', JSON.stringify(result));
-            // Return bearer token
-            return localStorage.getItem('bearerAuth');
-        }, [result], (data) => {
-            if (!data.value) {
-                cy.login('admin');
-            }
-        }).then(() => {
-            cy.visit('/admin');
-        });
-    });
-});
-
-/**
  * Handling API requests
  * @memberOf Cypress.Chainable#
- * @name requestAdminApi
+ * @name apiRequest
  * @function
  */
-Cypress.Commands.add("requestAdminApi", (method, url, requestData = {}) => {
+Cypress.Commands.add("apiRequest", (method, url, requestData = {}) => {
     const requestConfig = {
         auth: {
-            username: 'demo', // process.env.user,
-            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB' // process.env.api_key
+            username: 'demo',
+            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB'
         },
         method: method,
         url: url,
@@ -89,11 +28,17 @@ Cypress.Commands.add("requestAdminApi", (method, url, requestData = {}) => {
     });
 });
 
-Cypress.Commands.add("searchRequestAdminApi", (method, url, requestData = {}) => {
+/**
+ * Handling API requests customised on search tasks
+ * @memberOf Cypress.Chainable#
+ * @name apiSearchRequest
+ * @function
+ */
+Cypress.Commands.add("apiSearchRequest", (method, url, requestData = {}) => {
     const requestConfig = {
         auth: {
-            username: 'demo', // process.env.user,
-            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB' // process.env.api_key
+            username: 'demo',
+            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB'
         },
         method: method,
         url: url,
@@ -116,12 +61,12 @@ Cypress.Commands.add("searchRequestAdminApi", (method, url, requestData = {}) =>
 /**
  * Creates an entity using Shopware API at the given endpoint
  * @memberOf Cypress.Chainable#
- * @name createViaAdminApi
+ * @name apiCreate
  * @function
  * @param {Object} data - Necessary  for the API request
  */
-Cypress.Commands.add("createViaAdminApi", (data) => {
-    return cy.requestAdminApi(
+Cypress.Commands.add("apiCreate", (data) => {
+    return cy.apiRequest(
         'POST',
         `/api/${data.endpoint}`,
         data
@@ -131,11 +76,11 @@ Cypress.Commands.add("createViaAdminApi", (data) => {
 /**
  * Search for an existing entity using Shopware API at the given endpoint
  * @memberOf Cypress.Chainable#
- * @name searchViaAdminApi
+ * @name apiSearchByName
  * @function
  * @param {Object} data - Necessary data for the API request
  */
-Cypress.Commands.add("searchViaAdminApi", (data) => {
+Cypress.Commands.add("apiSearchByName", (data) => {
     const filters = {
         filter: {
             name: data.value
@@ -143,12 +88,11 @@ Cypress.Commands.add("searchViaAdminApi", (data) => {
         limit: 1
     };
 
-    return cy.searchRequestAdminApi(
+    return cy.apiSearchRequest(
         'GET',
         `/api/${data.endpoint}`,
         filters
     ).then((responseData) => {
-        console.log('responseData search :', responseData.body.data.id);
         return responseData.body.data[0].id;
     });
 });
@@ -156,17 +100,16 @@ Cypress.Commands.add("searchViaAdminApi", (data) => {
 /**
  * Search for an existing entity using Shopware API at the given endpoint
  * @memberOf Cypress.Chainable#
- * @name deleteViaAdminApi
+ * @name apiDelete
  * @function
  * @param {String} endpoint - API endpoint for the request
  * @param {String} id - Id of the entity to be deleted
  */
-Cypress.Commands.add("deleteViaAdminApi", (endpoint, id) => {
-    return cy.requestAdminApi(
+Cypress.Commands.add("apiDelete", (endpoint, id) => {
+    return cy.apiRequest(
         'DELETE',
         `/api/${endpoint}/${id}`
     ).then((responseData) => {
-        console.log('responseData delete :', responseData);
         return responseData;
     });
 });
@@ -174,14 +117,14 @@ Cypress.Commands.add("deleteViaAdminApi", (endpoint, id) => {
 /**
  * Updates an existing entity using Shopware API at the given endpoint
  * @memberOf Cypress.Chainable#
- * @name updateViaAdminApi
+ * @name apiUpdate
  * @function
  * @param {String} endpoint - API endpoint for the request
  * @param {String} id - Id of the entity to be updated
  * @param {Object} data - Necessary data for the API request
  */
-Cypress.Commands.add("updateViaAdminApi", (endpoint, id, data) => {
-    return cy.requestAdminApi('PATCH', `/api/${endpoint}/${id}`, data).then((responseData) => {
+Cypress.Commands.add("apiUpdate", (endpoint, id, data) => {
+    return cy.apiRequest('PATCH', `/api/${endpoint}/${id}`, data).then((responseData) => {
         return responseData;
     });
 });
