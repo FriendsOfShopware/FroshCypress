@@ -23,13 +23,11 @@ describe('Checkout: Run checkout in various ways', function () {
         cy.get('.ajax--cart').should('be.visible');
         cy.get('.item--name').contains(currentArticle.name);
         cy.get('.item--price').contains(currentArticle.grossRound);
-        cy.get('.prices--articles-amount').contains(currentArticle.grossRound);
         cy.get('.button--open-basket').click();
 
         // Checkout
         cy.get('.column--product .content--title').contains(currentArticle.name);
         cy.get('.column--total-price').contains(currentArticle.grossRound);
-        cy.get('.entry--sum').contains(currentArticle.grossRound);
         cy.get('.actions--bottom .btn--checkout-proceed').click();
 
         // Login
@@ -38,11 +36,30 @@ describe('Checkout: Run checkout in various ways', function () {
         cy.get('input[name=password]').type('shopware');
         cy.get('form[name=sLogin]').submit();
 
+        // Checkout / Confirm
+        cy.get('.tos--panel > .panel--title').contains('Terms, conditions and cancellation policy');
+        cy.get('.content--title').contains(currentArticle.name);
+        cy.get('.table--tr > .column--total-price').contains(currentArticle.grossRound);
+
+        /*
+        * As real orders will be created and must not be removed, we don't enable finishing checkout by default.
+        * If you allow orders to be created, just set the variable 'checkoutAllowed' to 'true'
+        * in your cypress.env.json file.
+        * */
+        if (Cypress.env('checkoutAllowed')) {
+            cy.get('#sAGB').click();
+            cy.get('.main--actions > .btn').click();
+
+            // Finish
+            cy.get('.finish--teaser > .panel--title').contains('Thank you');
+            cy.get('.content--title').contains(currentArticle.name);
+            cy.get('.table--tr > .column--total-price').contains(currentArticle.grossRound);
+        }
     });
 
     afterEach(function () {
-       // return cy.removeFixtureByNumber({
-         //   endpoint: 'customers'
-        //});
+         return cy.removeFixtureByNumber({
+           endpoint: 'customers'
+        });
     });
 });
