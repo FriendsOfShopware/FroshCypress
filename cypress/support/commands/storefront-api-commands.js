@@ -62,14 +62,26 @@ Cypress.Commands.add('storefrontApiRequest', (method, endpoint, header = {}, bod
  * @function
  */
 Cypress.Commands.add('getRandomProductInformationForCheckout', () => {
-    return cy.storefrontApiRequest('GET', 'product').then((result) => {
+    return cy.requestAdminApi(
+        'GET',
+        '/api/articles'
+    ).then((result) => {
+        const index = Math.floor((Math.random() * result.body.data.length));
+
+        return cy.getProductById({
+            endpoint: 'articles',
+            id: result.body.data[index].id,
+            options: {
+                considerTaxInput: true
+            }
+        })
+    }).then((result) => {
         return {
-            id: result[0].id,
-            name: result[0].name,
-            net: result[0].price.net,
-            gross: result[0].price.gross,
-            listingPrice: result[0].calculatedListingPrice.unitPrice,
-            url: `/detail/${result[0].id}`
+            id: result.body.data.id,
+            name: result.body.data.name,
+            gross: result.body.data.mainDetail.prices[0].price,
+            grossRound: result.body.data.mainDetail.prices[0].price.toFixed(2),
+            net: result.body.data.mainDetail.prices[0].net
         }
     })
 });

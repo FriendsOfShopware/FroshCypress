@@ -53,3 +53,38 @@ return cy.fixture(endpoint).then((result) => {
         })
     })
 });
+
+
+/**
+ * Creates an entity using Shopware API at the given endpoint
+ * @memberOf Cypress.Chainable#
+ * @name getProductById
+ * @function
+ * @param {Object} data - Necessary  for the API request
+ */
+Cypress.Commands.add("getProductById", (data) => {
+    return cy.requestAdminApi(
+        'GET',
+        `/api/${data.endpoint}/${data.id}?considerTaxInput=true`
+    )
+});
+
+/**
+ * Creates an entity using Shopware API at the given endpoint
+ * @memberOf Cypress.Chainable#
+ * @name removeFixtureByNumber
+ * @function
+ * @param {Object} data - Necessary  for the API request
+ */
+Cypress.Commands.add("removeFixtureByNumber", (data) => {
+    cy.fixture(data.endpoint).then((customer)  => {
+        return cy.requestAdminApi(
+            'GET',
+            `/api/${data.endpoint}/${customer.number}?useNumberAsId=true`
+        ).then((result) => {
+            console.log('result :', result);
+            return cy.deleteViaAdminApi(data.endpoint, result.body.data.id)
+        })
+    })
+
+});
