@@ -69,7 +69,7 @@ Cypress.Commands.add("requestAdminApi", (method, url, requestData = {}) => {
     const requestConfig = {
         auth: {
             username: 'demo', // process.env.user,
-            password: '8mnq6vav02p3buc8h2q4q6n137' // process.env.api_key
+            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB' // process.env.api_key
         },
         method: method,
         url: url,
@@ -93,7 +93,7 @@ Cypress.Commands.add("searchRequestAdminApi", (method, url, requestData = {}) =>
     const requestConfig = {
         auth: {
             username: 'demo', // process.env.user,
-            password: '8mnq6vav02p3buc8h2q4q6n137' // process.env.api_key
+            password: 'oNdfbFVdp4QErvVKMZnI5ydpD4xxDoq9rt5pZJKB' // process.env.api_key
         },
         method: method,
         url: url,
