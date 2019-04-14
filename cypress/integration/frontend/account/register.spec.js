@@ -1,9 +1,5 @@
 describe('Account: Register as new customer', function () {
-
-    beforeEach(function () {
-        return cy.createDefaultFixture('customers');
-    });
-
+    
     it('register using account menu', function () {
         cy.visit('/en');
         cy.get('.account--link').click();
@@ -31,7 +27,7 @@ describe('Account: Register as new customer', function () {
 
     afterEach(function () {
         return cy.getCustomerByEmail('acan@example.com').then((result) => {
-            //return cy.apiDelete('customers', result)
+            return cy.apiDelete('customers', result)
         });
     });
 });
