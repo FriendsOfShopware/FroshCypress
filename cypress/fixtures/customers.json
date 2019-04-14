@@ -3,7 +3,8 @@
   "firstname": "Max",
   "lastname": "Meier",
   "salutation": "mr",
-  "hashPassword":"$2y$10$QKILfIIDg7BdSdRFGFkce.XLSQjxzOBTcFCpfYm8SeefHjFfo5A.e",
+  "encoderName": "bcrypt",
+  "password":"shopware",
   "number":"mytest-46e32",
   "billing": {
     "firstname": "Max",
