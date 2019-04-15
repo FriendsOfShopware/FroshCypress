@@ -87,7 +87,7 @@ Cypress.Commands.add("getCustomerByEmail", (email) => {
 Cypress.Commands.add("getProductById", (data) => {
     return cy.apiRequest(
         'GET',
-        `/api/${data.endpoint}/${data.id}?considerTaxInput=true`
+        `/api/${data.endpoint}/${data.id}?considerTaxInput=true&language=2`
     )
 });
 

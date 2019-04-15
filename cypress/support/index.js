@@ -30,3 +30,5 @@ import './commands/xpath-commands'
 
 // Alternatively you can use CommonJS syntax:
 require('cypress-xpath');
+
+require('./helper/exception')

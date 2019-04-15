@@ -8,7 +8,7 @@ export default class ProductPageObject extends GeneralPageObject {
         this.elements = {
             ...this.elements,
             ...{
-                articleWindow: utils.XPathBuilder.getWindowXpathByTitle('Artikeldetails : Neuer Artikel'),
+                articleWindow: utils.XPathBuilder.getWindowXpathByTitle('Item details: new item'),
                 priceInput: 'input[name=price]'
             }
         };
@@ -26,7 +26,7 @@ export default class ProductPageObject extends GeneralPageObject {
             .reset(el.articleWindow)
             .child('div', [{
                 target: '@text',
-                condition: 'Beliebig'
+                condition: 'Arbitrary'
             }])
             .getXpath();
 
@@ -41,7 +41,7 @@ export default class ProductPageObject extends GeneralPageObject {
         cy.get(el.priceInput).should('be.visible');
         cy.get(el.priceInput).type(value);
         cy.get(el.priceInput).type('{enter}');
-        cy.xpath(productPriceField).contains(`${value},00`)
+        cy.xpath(productPriceField).contains(`${value}.00`)
     }
 
     /**

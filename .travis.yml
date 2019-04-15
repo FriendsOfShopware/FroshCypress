@@ -33,7 +33,6 @@ script:
   - cd ..
   - mysql -u travis shopware < setup.sql
   - sed -i -e 's/shopware.test/shopware.test:8080/' cypress.json
-  - curl shopware.test:8080
   - npm install
   - npm run cypress:run
 

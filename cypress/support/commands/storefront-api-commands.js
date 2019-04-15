@@ -64,7 +64,7 @@ Cypress.Commands.add('storefrontApiRequest', (method, endpoint, header = {}, bod
 Cypress.Commands.add('getRandomProductInformationForCheckout', () => {
     return cy.apiRequest(
         'GET',
-        '/api/articles'
+        '/api/articles?language=2'
     ).then((result) => {
         const index = Math.floor((Math.random() * result.body.data.length));
 
