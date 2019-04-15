@@ -1,0 +1,41 @@
+language: php
+
+php:
+  - 7.2
+
+sudo: false
+
+addons:
+  hosts:
+    - shopware.test
+
+cache:
+  npm: true
+  directories:
+    - $HOME/.composer/cache/files
+    - ~/.cache
+
+before_script:
+  - if [[ "$(php --version | grep -cim1 xdebug)" -ge 1 ]]; then phpenv config-rm xdebug.ini; fi
+
+script:
+  - git clone https://github.com/shopware/shopware.git shopware
+  - cd shopware
+  - ant -f build/build.xml -Dapp.host=localhost -Ddb.user=travis -Ddb.host=127.0.0.1 -Ddb.name=shopware -Dapp.host=shopware.test:8080 build-composer-install build-config build-install-lock-file start-server
+  - ./bin/console sw:database:setup --steps=drop,create,import,importDemodata
+  - ./bin/console sw:database:setup --steps=setupShop --shop-url="http://shopware.test:8080"
+  - ./bin/console sw:snippets:to:db --include-plugins
+  - ./bin/console sw:theme:initialize
+  - ./bin/console sw:firstrunwizard:disable
+  - ./bin/console sw:plugin:deactivate SwagUpdate
+  - ./bin/console sw:admin:create --name="Demo" --email="demo@demo.de" --username="demo" --password="demo" --locale=en_GB -n
+  - mysql -u travis shopware < recovery/install/data/sql/en.sql
+  - cd ..
+  - mysql -u travis shopware < setup.sql
+  - sed -i -e 's/shopware.test/shopware.test:8080/' cypress.json
+  - curl shopware.test:8080
+  - npm install
+  - npm run cypress:run
+
+notifications:
+  email: false
