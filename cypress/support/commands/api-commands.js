@@ -7,7 +7,7 @@
 Cypress.Commands.add("authenticate", () => {
     return cy.request(
         'POST',
-        '/api/oauth/token',
+        '/api',
         {
             grant_type: Cypress.env('grant') ? Cypress.env('grant') : 'password',
             client_id: Cypress.env('client_id') ? Cypress.env('client_id') : 'administration',
@@ -59,7 +59,6 @@ Cypress.Commands.add("loginViaApi", () => {
     });
 });
 
-
 /**
  * Handling API requests
  * @memberOf Cypress.Chainable#
@@ -67,19 +66,19 @@ Cypress.Commands.add("loginViaApi", () => {
  * @function
  */
 Cypress.Commands.add("requestAdminApi", (method, url, requestData = {}) => {
-    return cy.authenticate().then(() => {
-        const requestConfig = {
-            headers: {
-                Authorization: [Cypress.env('user'), Cypress.env('apiKey'), 'digest']
-            },
-            method: method,
-            url: url,
-            body: requestData.data
-        };
-        return cy.request(requestConfig);
-    }).then((response) => {
-        if (response.body) {
-            const responseBodyObj = response.body ? JSON.parse(response.body) : response;
+    const requestConfig = {
+        auth: {
+            username: 'demo', // process.env.user,
+            password: '8mnq6vav02p3buc8h2q4q6n137' // process.env.api_key
+        },
+        method: method,
+        url: url,
+        body: requestData.data
+    };
+
+    return cy.request(requestConfig).then((response) => {
+        if (response.body.data) {
+            const responseBodyObj = response.body.data;
 
             if (Array.isArray(responseBodyObj.data) && responseBodyObj.data.length <= 1) {
                 return responseBodyObj.data[0];
@@ -91,24 +90,19 @@ Cypress.Commands.add("requestAdminApi", (method, url, requestData = {}) => {
 });
 
 Cypress.Commands.add("searchRequestAdminApi", (method, url, requestData = {}) => {
-    return cy.authenticate().then((result) => {
-        const requestConfig = {
-            headers: {
-                Accept: 'application/vnd.api+json',
-                Authorization: `Bearer ${result.access}`,
-                'Content-Type': 'application/json'
-            },
-            method: method,
-            url: url,
-            qs: {
-                response: true
-            },
-            body: requestData
-        };
-        return cy.request(requestConfig);
-    }).then((response) => {
+    const requestConfig = {
+        auth: {
+            username: 'demo', // process.env.user,
+            password: '8mnq6vav02p3buc8h2q4q6n137' // process.env.api_key
+        },
+        method: method,
+        url: url,
+        body: requestData
+    };
+
+    return cy.request(requestConfig).then((response) => {
         if (response.body) {
-            const responseBodyObj = response;
+            const responseBodyObj = response.body.data;
 
             if (Array.isArray(responseBodyObj.data) && responseBodyObj.data.length <= 1) {
                 return responseBodyObj.data[0];
@@ -127,15 +121,11 @@ Cypress.Commands.add("searchRequestAdminApi", (method, url, requestData = {}) =>
  * @param {Object} data - Necessary  for the API request
  */
 Cypress.Commands.add("createViaAdminApi", (data) => {
-    console.log('data :', data);
     return cy.requestAdminApi(
         'POST',
-        `/api/${data.endpoint}?response=true`,
+        `/api/${data.endpoint}`,
         data
-    ).then((responseData) => {
-        console.log('responseData :', responseData);
-        return responseData;
-    });
+    )
 });
 
 /**
@@ -147,19 +137,19 @@ Cypress.Commands.add("createViaAdminApi", (data) => {
  */
 Cypress.Commands.add("searchViaAdminApi", (data) => {
     const filters = {
-        filter: [{
-            field: data.data.field,
-            type: 'equals',
-            value: data.data.value
-        }]
+        filter: {
+            name: data.value
+        },
+        limit: 1
     };
 
     return cy.searchRequestAdminApi(
-        'POST',
-        `/api/search/${data.endpoint}`,
+        'GET',
+        `/api/${data.endpoint}`,
         filters
     ).then((responseData) => {
-        return responseData.body.data[0];
+        console.log('responseData search :', responseData.body.data.id);
+        return responseData.body.data[0].id;
     });
 });
 
@@ -172,11 +162,14 @@ Cypress.Commands.add("searchViaAdminApi", (data) => {
  * @param {String} id - Id of the entity to be deleted
  */
 Cypress.Commands.add("deleteViaAdminApi", (endpoint, id) => {
-    return cy.requestAdminApi('DELETE', `/api/${endpoint}/${id}`).then((responseData) => {
+    return cy.requestAdminApi(
+        'DELETE',
+        `/api/${endpoint}/${id}`
+    ).then((responseData) => {
+        console.log('responseData delete :', responseData);
         return responseData;
     });
 });
-
 
 /**
  * Updates an existing entity using Shopware API at the given endpoint
