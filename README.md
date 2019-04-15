@@ -1,4 +1,4 @@
-# sw5-cypress
+# FroshCypress
 This is a project dealing with the implementation of E2E tests for the Shopware 5 using [Cypress.io](https://www.cypress.io/) framework.
 
 ## Setup
