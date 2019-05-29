@@ -7,8 +7,8 @@
 Cypress.Commands.add("apiRequest", (method, url, requestData = {}) => {
     const requestConfig = {
         auth: {
-            username: 'demo',
-            password: '8mnq6vav02p3buc8h2q4q6n137'
+            username: Cypress.env('apiUser'),
+            password: Cypress.env('apiKey')
         },
         method: method,
         url: url,
@@ -37,8 +37,8 @@ Cypress.Commands.add("apiRequest", (method, url, requestData = {}) => {
 Cypress.Commands.add("apiSearchRequest", (method, url, requestData = {}) => {
     const requestConfig = {
         auth: {
-            username: 'demo',
-            password: '8mnq6vav02p3buc8h2q4q6n137'
+            username: Cypress.env('apiUser'),
+            password: Cypress.env('apiKey')
         },
         method: method,
         url: url,
@@ -73,6 +73,25 @@ Cypress.Commands.add("apiCreate", (data) => {
     )
 });
 
+Cypress.Commands.add("apiSingleSearch", (data) => {
+    console.log('data.value :', data.value);
+    const filters = {
+        filter: data.filters,
+        limit: 1
+    };
+
+    return cy.apiSearchRequest(
+        'GET',
+        `/api/${data.endpoint}`,
+        filters
+    ).then((responseData) => {
+        console.log('RESPONSE');
+        console.log(responseData);
+        return responseData.body.data[0].id;
+    });
+});
+
+
 /**
  * Search for an existing entity using Shopware API at the given endpoint
  * @memberOf Cypress.Chainable#
@@ -82,18 +101,20 @@ Cypress.Commands.add("apiCreate", (data) => {
  */
 Cypress.Commands.add("apiSearchByName", (data) => {
     console.log('data.value :', data.value);
-    const filters = {
-        filter: {
-            name: data.value
-        },
+    let filters = {
+        filter: {},
         limit: 1
     };
+
+    filters.filter[data.searchField] = data.value;
 
     return cy.apiSearchRequest(
         'GET',
         `/api/${data.endpoint}`,
         filters
     ).then((responseData) => {
+        console.log('RESPONSE');
+        console.log(responseData);
         return responseData.body.data[0].id;
     });
 });

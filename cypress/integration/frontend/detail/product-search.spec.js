@@ -1,6 +1,6 @@
 let currentArticle = '';
 
-describe('Detail: Find article and open it', function () {
+describe('Detail: Find product and open it', function () {
 
     beforeEach(function () {
         return cy.getRandomProductInformationForCheckout().then((result) => {
@@ -9,7 +9,7 @@ describe('Detail: Find article and open it', function () {
     });
 
     it('create a product with an image', function () {
-        cy.visit('/en');
+        cy.visit(Cypress.env('homeUrl'));
 
         // Search
         cy.get('input[name=sSearch]').type(currentArticle.name);

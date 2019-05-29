@@ -29,6 +29,7 @@ Cypress.Commands.add("createDefaultFixture", (endpoint) => {
 Cypress.Commands.add("removeFixtureByName", (name, endpoint, options = {}) => {
     return cy.apiSearchByName({
         endpoint: endpoint,
+        searchField: options.searchField || 'name',
         value: name
     }).then((result) => {
         return cy.apiDelete(endpoint, result)
