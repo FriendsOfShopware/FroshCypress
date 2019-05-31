@@ -73,6 +73,19 @@ Cypress.Commands.add("apiCreate", (data) => {
     )
 });
 
+/**
+ * Refreshes the index
+ * @memberOf Cypress.Chainable#
+ * @name rebuildIndex
+ * @function
+ */
+Cypress.Commands.add('rebuildIndex', () => {
+    return cy.apiRequest(
+        'GET',
+        '/api/FroshCypressHelper'
+    );
+});
+
 Cypress.Commands.add("apiSingleSearch", (data) => {
     console.log('data.value :', data.value);
     const filters = {

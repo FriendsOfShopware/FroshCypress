@@ -5,15 +5,36 @@ const createUuid = require('uuid/v4');
  * @memberOf Cypress.Chainable#
  * @name createDefaultFixture
  * @function
- * @param {String} endpoint - API endpoint for the request
- * @param {Object} [options={}] - Options concerning deletion
+ * @param {String} fixtureName - Fixture name
+ * @param {String} endpoint - API endpoint name
  */
-Cypress.Commands.add("createDefaultFixture", (endpoint) => {
-    return cy.fixture(endpoint).then((json) => {
+Cypress.Commands.add("createDefaultFixture", (fixtureName, endpoint) => {
+    return cy.fixture(fixtureName).then((json) => {
         return cy.apiCreate({
-            endpoint: endpoint,
+            endpoint: endpoint || fixtureName,
             data: json
         })
+    });
+});
+
+/**
+ * Search for an existing entity using Shopware API at the given endpoint
+ * @memberOf Cypress.Chainable#
+ * @name createBatchDefaultFixture
+ * @function
+ * @param {String} fixtureName - Fixture name
+ * @param {String} endpoint - API endpoint name
+ */
+Cypress.Commands.add("createBatchDefaultFixture", (fixtureName, endpoint) => {
+    return cy.fixture(fixtureName).then((json) => {
+        console.log(json);
+        return cy.apiRequest(
+            'PUT',
+            `/api/${endpoint}/`,
+            {
+                data: json
+            }
+        )
     });
 });
 
@@ -95,18 +116,58 @@ Cypress.Commands.add("getProductById", (data) => {
 /**
  * Creates an entity using Shopware API at the given endpoint
  * @memberOf Cypress.Chainable#
- * @name removeFixtureByNumber
+ * @name removeFixture
  * @function
- * @param {Object} data - Necessary  for the API request
+ * @param {String} fixtureName - Fixture name
+ * @param {String} endpoint - API endpoint name
  */
-Cypress.Commands.add("removeFixtureByNumber", (data) => {
-    cy.fixture(data.endpoint).then((customer)  => {
+Cypress.Commands.add("removeFixture", (fixtureName, endpoint) => {
+    cy.fixture(fixtureName).then((data)  => {
         return cy.apiRequest(
             'GET',
-            `/api/${data.endpoint}/${customer.number}?useNumberAsId=true`
+            `/api/${endpoint}/${data.key}?useNumberAsId=true`
         ).then((result) => {
-            console.log('result :', result);
-            return cy.apiDelete(data.endpoint, result.body.data.id)
+            return cy.apiDelete(endpoint, result.body.data.id)
         })
+    })
+});
+
+
+/**
+ * Creates an entity using Shopware API at the given endpoint
+ * @memberOf Cypress.Chainable#
+ * @name removeBatchFixture
+ * @function
+ * @param {String} fixtureName - Fixture name
+ * @param {String} endpoint - API endpoint name
+ */
+Cypress.Commands.add("removeBatchFixture", (fixtureName, endpoint) => {
+    let promisify = (request) => {
+        return new Promise(((resolve, reject) => {
+            request.then(res => {
+                resolve(res);
+            });
+        }))
+    };
+
+    cy.fixture(fixtureName).then((data)  => {
+        let promises = [];
+        data.forEach(item => {
+            promises.push(promisify(cy.apiRequest(
+                'GET',
+                `/api/${endpoint}/${item.key}?useNumberAsId=true`
+            )));
+        });
+
+        return Promise.all(promises).then(resultSets => {
+            console.log(resultSets);
+            let promises = [];
+            resultSets.forEach(item => {
+                console.log(item);
+               promises.push(promisify(cy.apiDelete(endpoint, item.body.data.id)));
+            });
+
+            return Promise.all(promises);
+        });
     })
 });

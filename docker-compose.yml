@@ -5,6 +5,10 @@ services:
     env_file: docker.env
     tmpfs:
       - /var/lib/mysql
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
   nginx:
     image: shyim/nginx-php-shopware:73
     env_file:

@@ -1,0 +1,90 @@
+[
+  {
+    "key": "SW1",
+    "name": "Test 1",
+    "taxId": 1,
+    "supplier": "Test",
+    "active": true,
+    "categories": [
+      {
+        "id": 3
+      }
+    ],
+    "mainDetail": {
+      "active": true,
+      "number": "SW1",
+      "prices": [
+        {
+          "customerGroupKey": "EK",
+          "price": "120"
+        }
+      ]
+    }
+  },
+  {
+    "key": "SW2",
+    "name": "Cool Product 2",
+    "taxId": 1,
+    "supplier": "Test",
+    "active": true,
+    "categories": [
+      {
+        "id": 3
+      }
+    ],
+    "mainDetail": {
+      "active": true,
+      "number": "SW2",
+      "prices": [
+        {
+          "customerGroupKey": "EK",
+          "price": "120"
+        }
+      ]
+    }
+  },
+  {
+    "key": "SW3",
+    "name": "Fancy Product 1",
+    "taxId": 1,
+    "supplier": "Test",
+    "active": true,
+    "categories": [
+      {
+        "id": 3
+      }
+    ],
+    "mainDetail": {
+      "active": true,
+      "number": "SW3",
+      "prices": [
+        {
+          "customerGroupKey": "EK",
+          "price": "120"
+        }
+      ]
+    }
+  },
+  {
+    "key": "SW4",
+    "name": "Best summer Product 1",
+    "taxId": 1,
+    "supplier": "Test",
+    "active": true,
+    "categories": [
+      {
+        "id": 3
+      }
+    ],
+    "mainDetail": {
+      "active": true,
+      "number": "SW4",
+      "prices": [
+        {
+          "customerGroupKey": "EK",
+          "price": "120"
+        }
+      ]
+    }
+  }
+]

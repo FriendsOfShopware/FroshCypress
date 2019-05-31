@@ -1,19 +1,39 @@
 let currentArticle = '';
 
 describe('Checkout: Run checkout in various ways', function () {
-
     beforeEach(function () {
-        return cy.getRandomProductInformationForCheckout().then((result) => {
-            currentArticle = result;
-            return cy.createDefaultFixture('customers')
-        })
+        // return cy.createBatchDefaultFixture('random_products', 'articles').then(() => {
+            return cy.createDefaultFixture('product', 'articles').then(result => {
+                return cy.getProductById({
+                    endpoint: 'articles',
+                    id: result.body.data.id,
+                    options: {
+                        considerTaxInput: true
+                    }
+                }).then(productResult => {
+                    console.log(productResult);
+                    currentArticle = {
+                        id: productResult.body.data.id,
+                        name: productResult.body.data.name,
+                        gross: productResult.body.data.mainDetail.prices[0].price,
+                        grossRound: productResult.body.data.mainDetail.prices[0].price.toFixed(2),
+                        net: productResult.body.data.mainDetail.prices[0].net
+                    };
+
+                    return Promise.all([
+                        cy.createDefaultFixture('customers', 'customers'),
+                        cy.rebuildIndex()
+                    ]);
+                });
+            });
+        // });
     });
 
     it('run checkout with logging in in the prcess', function () {
-        cy.visit(Cypress.env('homeUrl'));
+        cy.visit('/');
 
         // Detail
-        cy.get('input[name=sSearch]').type(currentArticle.name);
+        cy.get('input[name=sSearch]').type(currentArticle.name.substr(0, currentArticle.name.length - 1));
         cy.get('.main-search--results .entry--name').contains(currentArticle.name);
         cy.get('.main-search--results .list--entry:nth-of-type(1)').click();
         cy.get('.product--title').contains(currentArticle.name);
@@ -58,8 +78,10 @@ describe('Checkout: Run checkout in various ways', function () {
     });
 
     afterEach(function () {
-         return cy.removeFixtureByNumber({
-           endpoint: 'customers'
-        });
+        return Promise.all([
+            cy.removeFixture('customers', 'customers'),
+            cy.removeFixture('product', 'articles'),
+            cy.removeBatchFixture('random_products', 'articles')
+        ]);
     });
 });
