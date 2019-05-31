@@ -17,6 +17,26 @@ services:
       - 80:80
     volumes:
       - ./web:/var/www/html
+    depends_on:
+      - mysql
+  cli:
+    image: shyim/shopware-cli:php72
+    volumes:
+      - ./web:/var/www/html
+    working_dir: /var/www/html
+  wait_for_mysql:
+    image: shyim/nginx-php-shopware:73
+    depends_on:
+      - mysql
+    command: >
+      /usr/bin/env sh -c "
+        while ! nc -z mysql 3306;
+        do
+          echo -n '.';
+          sleep 1;
+        done;
+        echo MySQL is ready!;
+      "
   cypress:
     image: cypress/browsers:node11.13.0-chrome73
     links:
@@ -25,4 +45,6 @@ services:
       - docker.env
     volumes:
       - ./:/app
-      - /app/node_modules
+    working_dir: /app
+    depends_on:
+      - nginx
