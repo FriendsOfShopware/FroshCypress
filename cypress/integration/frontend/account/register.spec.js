@@ -17,7 +17,7 @@ describe('Account: Register as new customer', function () {
         cy.get('#street').type('Street');
         cy.get('#zipcode').type('12345');
         cy.get('#city').type('City');
-        cy.get('#country').select('Deutschland');
+        cy.get('#country').select('Great Britain');
         cy.get('#dpacheckbox').click();
         cy.get('#register--form').submit();
 

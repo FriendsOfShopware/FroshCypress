@@ -1,0 +1,24 @@
+version: '3'
+services:
+  mysql:
+    image: mariadb:10.3
+    env_file: docker.env
+    tmpfs:
+      - /var/lib/mysql
+  nginx:
+    image: shyim/nginx-php-shopware:73
+    env_file:
+      - docker.env
+    ports:
+      - 80:80
+    volumes:
+      - ./web:/var/www/html
+  cypress:
+    image: cypress/browsers:node11.13.0-chrome73
+    links:
+      - nginx:shopware.test
+    env_file:
+      - docker.env
+    volumes:
+      - ./:/app
+      - /app/node_modules
