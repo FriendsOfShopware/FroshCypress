@@ -10,7 +10,7 @@ describe('Checkout: Run checkout in various ways', function () {
     });
 
     it('run checkout with logging in in the prcess', function () {
-        cy.visit('/en');
+        cy.visit(Cypress.env('homeUrl'));
 
         // Detail
         cy.get('input[name=sSearch]').type(currentArticle.name);

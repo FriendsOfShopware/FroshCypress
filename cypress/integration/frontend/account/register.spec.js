@@ -1,7 +1,7 @@
 describe('Account: Register as new customer', function () {
     
     it('register using account menu', function () {
-        cy.visit('/en');
+        cy.visit(Cypress.env('homeUrl'));
         cy.get('.account--link').click();
         cy.get('.account--menu-container').should('be.visible');
         cy.get('.navigation--register > .blocked--link').click();

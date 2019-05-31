@@ -48,8 +48,8 @@ Cypress.Commands.add('typeAndCheck', {
 Cypress.Commands.add("login", (userType) => {
     const types = {
         demo: {
-            name: 'demo',
-            pass: 'demo'
+            name: Cypress.env('backendUser'),
+            pass: Cypress.env('backendPass')
         }
     };
     const user = types[userType];

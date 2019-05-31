@@ -1,5 +1,5 @@
-import utils from './../../../support/helper/utils';
-import ProductPageObject from "./../../../support/pages/module/sw-product.page-object";
+import utils from '../../../support/helper/utils';
+import ProductPageObject from "../../../support/pages/module/sw-product.page-object";
 
 describe('Product: Create with image', function () {
 
@@ -27,7 +27,9 @@ describe('Product: Create with image', function () {
 
     afterEach(function () {
         return cy.removeFixtureByName('Artikel-Freude', 'articles').then(() => {
-            return cy.removeFixtureByName('TestenderHerstellerTestet', 'manufacturers')
+            return cy.removeFixtureByName('TestenderHerstellerTestet', 'manufacturers', {
+                searchField: 'supplier.name'
+            })
         })
     });
 });

@@ -5,7 +5,7 @@ describe('Account: Login as customer', function () {
     });
 
     it('login using account menu', function () {
-        cy.visit('/en');
+        cy.visit(Cypress.env('homeUrl'));
         cy.get('.account--link').click();
         cy.get('.account--menu-container').should('be.visible');
         cy.get('.navigation--signin > .btn').click();
