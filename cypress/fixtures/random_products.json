@@ -1,6 +1,5 @@
 [
   {
-    "key": "SW1",
     "name": "Test 1",
     "taxId": 1,
     "supplier": "Test",
@@ -22,7 +21,6 @@
     }
   },
   {
-    "key": "SW2",
     "name": "Cool Product 2",
     "taxId": 1,
     "supplier": "Test",
@@ -44,7 +42,6 @@
     }
   },
   {
-    "key": "SW3",
     "name": "Fancy Product 1",
     "taxId": 1,
     "supplier": "Test",
@@ -66,7 +63,6 @@
     }
   },
   {
-    "key": "SW4",
     "name": "Best summer Product 1",
     "taxId": 1,
     "supplier": "Test",

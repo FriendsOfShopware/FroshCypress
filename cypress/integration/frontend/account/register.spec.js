@@ -27,8 +27,8 @@ describe('Account: Register as new customer', function () {
 
         cy.get('#register--form').submit();
 
-        // Checkout / Confirm
-        // cy.get('.account--welcome .panel--title').should('be.visible');
+        // Check account page
+        cy.get('.account--welcome .panel--title').should('be.visible');
     });
 
     afterEach(function () {
