@@ -26,10 +26,8 @@ describe('Product: Create with image', function () {
     });
 
     afterEach(function () {
-        return cy.removeFixtureByName('Charmeleon', 'articles').then(() => {
-            return cy.removeFixtureByName('Pokemon', 'manufacturers', {
-                searchField: 'supplier.name'
-            })
-        })
+        cy.task('registerToCleanup', {endpoint: 'articles', field: 'name', value: 'Charmeleon'});
+        cy.task('registerToCleanup', {endpoint: 'manufacturers', field: 'supplier.name', value: 'Pokemon'});
+        cy.task('rollbackFixtures');
     });
 });

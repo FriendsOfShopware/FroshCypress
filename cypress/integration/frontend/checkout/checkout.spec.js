@@ -2,38 +2,21 @@ let currentArticle = '';
 
 describe('Checkout: Run checkout in various ways', function () {
     beforeEach(function () {
-        // return cy.createBatchDefaultFixture('random_products', 'articles').then(() => {
-            return cy.createDefaultFixture('product', 'articles').then(result => {
-                return cy.getProductById({
-                    endpoint: 'articles',
-                    id: result.body.data.id,
-                    options: {
-                        considerTaxInput: true
-                    }
-                }).then(productResult => {
-                    console.log(productResult);
-                    currentArticle = {
-                        id: productResult.body.data.id,
-                        name: productResult.body.data.name,
-                        gross: productResult.body.data.mainDetail.prices[0].price,
-                        grossRound: productResult.body.data.mainDetail.prices[0].price.toFixed(2),
-                        net: productResult.body.data.mainDetail.prices[0].net
-                    };
-
-                    return Promise.all([
-                        cy.createDefaultFixture('customers', 'customers'),
-                        cy.rebuildIndex()
-                    ]);
-                });
-            });
-        // });
+        cy.task('applyFixture', {fixtureName: 'customers', endpoint: 'customers'});
+        cy.task('applyFixture', {fixtureName: 'random_products', endpoint: 'articles'});
+        cy.task('applyFixture', {fixtureName: 'product', endpoint: 'articles'}, {
+            timeout: 5000
+        }).then(data => {
+            currentArticle = data;
+        });
+        cy.task('rebuildIndex');
     });
 
     it('run checkout with logging in in the prcess', function () {
         cy.visit('/');
 
         // Detail
-        cy.get('input[name=sSearch]').type(currentArticle.name.substr(0, currentArticle.name.length - 1));
+        cy.get('input[name=sSearch]').type(currentArticle.name);
         cy.get('.main-search--results .entry--name').contains(currentArticle.name);
         cy.get('.main-search--results .list--entry:nth-of-type(1)').click();
         cy.get('.product--title').contains(currentArticle.name);
@@ -42,12 +25,12 @@ describe('Checkout: Run checkout in various ways', function () {
         // Off canvas
         cy.get('.ajax--cart').should('be.visible');
         cy.get('.item--name').contains(currentArticle.name);
-        cy.get('.item--price').contains(currentArticle.grossRound);
+        cy.get('.item--price').contains(currentArticle.mainDetail.prices[0].price);
         cy.get('.button--open-basket').click();
 
         // Checkout
         cy.get('.column--product .content--title').contains(currentArticle.name);
-        cy.get('.column--total-price').contains(currentArticle.grossRound);
+        cy.get('.column--total-price').contains(currentArticle.mainDetail.prices[0].price);
         cy.get('.actions--bottom .btn--checkout-proceed').click();
 
         // Login
@@ -59,7 +42,7 @@ describe('Checkout: Run checkout in various ways', function () {
         // Checkout / Confirm
         cy.get('.tos--panel > .panel--title').contains('Terms, conditions and cancellation policy');
         cy.get('.content--title').contains(currentArticle.name);
-        cy.get('.table--tr > .column--total-price').contains(currentArticle.grossRound);
+        cy.get('.table--tr > .column--total-price').contains(currentArticle.mainDetail.prices[0].price);
 
         /*
         * As real orders will be created and must not be removed, we don't enable finishing checkout by default.
@@ -73,15 +56,11 @@ describe('Checkout: Run checkout in various ways', function () {
             // Finish
             cy.get('.finish--teaser > .panel--title').contains('Thank you');
             cy.get('.content--title').contains(currentArticle.name);
-            cy.get('.table--tr > .column--total-price').contains(currentArticle.grossRound);
+            cy.get('.table--tr > .column--total-price').contains(currentArticle.mainDetail.prices[0].price);
         }
     });
 
     afterEach(function () {
-        return Promise.all([
-            cy.removeFixture('customers', 'customers'),
-            cy.removeFixture('product', 'articles'),
-            cy.removeBatchFixture('random_products', 'articles')
-        ]);
+        cy.task('rollbackFixtures');
     });
 });

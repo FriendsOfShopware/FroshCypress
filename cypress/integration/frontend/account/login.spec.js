@@ -1,7 +1,7 @@
 describe('Account: Login as customer', function () {
 
     beforeEach(function () {
-        return cy.createDefaultFixture('customers', 'customers');
+        cy.task('applyFixture', {fixtureName: 'customers', endpoint: 'customers'});
     });
 
     it('login using account menu', function () {
@@ -21,6 +21,6 @@ describe('Account: Login as customer', function () {
     });
 
     afterEach(function () {
-        return cy.removeFixture('customers', 'customers');
+        cy.task('rollbackFixtures');
     });
 });
