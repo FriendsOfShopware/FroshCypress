@@ -9,6 +9,7 @@ setup_shopware() {
   docker-compose run --rm -u "$(id -u):$(id -g)" --entrypoint composer cli install -o
 
   touch ./web/recovery/install/data/install.lock
+  cp -R swPlugin/* web/custom/plugins/
 
   echo "<?php
   return [
@@ -39,7 +40,8 @@ initialize_db () {
 }
 
 start_containers() {
-  docker-compose run --rm wait_for_mysql && docker-compose up -d nginx
+  docker-compose up -d
+  docker-compose run --rm wait_for_mysql
 }
 
 cypress_run() {
