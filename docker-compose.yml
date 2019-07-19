@@ -1,0 +1,50 @@
+version: '3'
+services:
+  mysql:
+    image: mariadb:10.3
+    env_file: docker.env
+    tmpfs:
+      - /var/lib/mysql
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+  nginx:
+    image: shyim/nginx-php-shopware:73
+    env_file:
+      - docker.env
+    ports:
+      - 80:80
+    volumes:
+      - ./web:/var/www/html
+    depends_on:
+      - mysql
+  cli:
+    image: shyim/shopware-cli:php72
+    volumes:
+      - ./web:/var/www/html
+    working_dir: /var/www/html
+  wait_for_mysql:
+    image: shyim/nginx-php-shopware:73
+    depends_on:
+      - mysql
+    command: >
+      /usr/bin/env sh -c "
+        while ! nc -z mysql 3306;
+        do
+          echo -n '.';
+          sleep 1;
+        done;
+        echo MySQL is ready!;
+      "
+  cypress:
+    image: cypress/browsers:node11.13.0-chrome73
+    links:
+      - nginx:shopware.test
+    env_file:
+      - docker.env
+    volumes:
+      - ./:/app
+    working_dir: /app
+    depends_on:
+      - nginx

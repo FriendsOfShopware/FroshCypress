@@ -1,16 +1,19 @@
 let currentArticle = '';
 
 describe('Checkout: Run checkout in various ways', function () {
-
     beforeEach(function () {
-        return cy.getRandomProductInformationForCheckout().then((result) => {
-            currentArticle = result;
-            return cy.createDefaultFixture('customers')
-        })
+        cy.task('applyFixture', {fixtureName: 'customers', endpoint: 'customers'});
+        cy.task('applyFixture', {fixtureName: 'random_products', endpoint: 'articles'});
+        cy.task('applyFixture', {fixtureName: 'product', endpoint: 'articles'}, {
+            timeout: 5000
+        }).then(data => {
+            currentArticle = data;
+        });
+        cy.task('rebuildIndex');
     });
 
     it('run checkout with logging in in the prcess', function () {
-        cy.visit(Cypress.env('homeUrl'));
+        cy.visit('/');
 
         // Detail
         cy.get('input[name=sSearch]').type(currentArticle.name);
@@ -22,12 +25,12 @@ describe('Checkout: Run checkout in various ways', function () {
         // Off canvas
         cy.get('.ajax--cart').should('be.visible');
         cy.get('.item--name').contains(currentArticle.name);
-        cy.get('.item--price').contains(currentArticle.grossRound);
+        cy.get('.item--price').contains(currentArticle.mainDetail.prices[0].price);
         cy.get('.button--open-basket').click();
 
         // Checkout
         cy.get('.column--product .content--title').contains(currentArticle.name);
-        cy.get('.column--total-price').contains(currentArticle.grossRound);
+        cy.get('.column--total-price').contains(currentArticle.mainDetail.prices[0].price);
         cy.get('.actions--bottom .btn--checkout-proceed').click();
 
         // Login
@@ -39,7 +42,7 @@ describe('Checkout: Run checkout in various ways', function () {
         // Checkout / Confirm
         cy.get('.tos--panel > .panel--title').contains('Terms, conditions and cancellation policy');
         cy.get('.content--title').contains(currentArticle.name);
-        cy.get('.table--tr > .column--total-price').contains(currentArticle.grossRound);
+        cy.get('.table--tr > .column--total-price').contains(currentArticle.mainDetail.prices[0].price);
 
         /*
         * As real orders will be created and must not be removed, we don't enable finishing checkout by default.
@@ -53,13 +56,11 @@ describe('Checkout: Run checkout in various ways', function () {
             // Finish
             cy.get('.finish--teaser > .panel--title').contains('Thank you');
             cy.get('.content--title').contains(currentArticle.name);
-            cy.get('.table--tr > .column--total-price').contains(currentArticle.grossRound);
+            cy.get('.table--tr > .column--total-price').contains(currentArticle.mainDetail.prices[0].price);
         }
     });
 
     afterEach(function () {
-         return cy.removeFixtureByNumber({
-           endpoint: 'customers'
-        });
+        cy.task('rollbackFixtures');
     });
 });

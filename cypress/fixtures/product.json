@@ -1,0 +1,21 @@
+{
+  "name": "Detective Pikachu",
+  "taxId": 1,
+  "supplier": "Pokemon",
+  "active": true,
+  "categories": [
+    {
+      "id": 3
+    }
+  ],
+  "mainDetail": {
+    "active": true,
+    "number": "SW00003",
+    "prices": [
+      {
+        "customerGroupKey": "EK",
+        "price": "120"
+      }
+    ]
+  }
+}

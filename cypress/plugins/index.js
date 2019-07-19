@@ -7,14 +7,27 @@
 // You can read more here:
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
-const cucumber = require('cypress-cucumber-preprocessor').default;
+global.envConfig = require('../../cypress.env.json');
+const FixtureManager = require('../support/helper/fixture');
+const Http = require('../support/helper/http');
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
 module.exports = (on, config) => {
-    // `on` is used to hook into various events Cypress emits
-    // `config` is the resolved Cypress config
-
-    on('file:preprocessor', cucumber())
+    on('task', {
+        applyFixture ({fixtureName, endpoint }) {
+            return FixtureManager.applyFixture(fixtureName, endpoint);
+        },
+        registerToCleanup ({endpoint, field, value }) {
+            return FixtureManager.registerToCleanup(endpoint, field, value);
+        },
+        rollbackFixtures() {
+            return FixtureManager.rollback();
+        },
+        async rebuildIndex() {
+            await Http.get('/FroshCypressHelper');
+            return null;
+        }
+    })
 };

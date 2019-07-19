@@ -39,3 +39,6 @@ cypress.env.json
 dist/
 
 !**/.gitkeep
+
+/web
+.cypress-cache
